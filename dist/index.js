@@ -15,41 +15,62 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
+const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const express_session_1 = __importDefault(require("express-session"));
 const siwe_1 = require("siwe");
 const verify_1 = require("./handlers/verify");
 dotenv_1.default.config();
+const { PORT, COOKIE_SECRET, COOKIE_NAME, CLOUD_APP_URL } = process.env;
+if (!COOKIE_SECRET) {
+    throw new ReferenceError("COOKIE_SECRET missing in environment variables");
+}
+if (!CLOUD_APP_URL) {
+    throw new ReferenceError("CLOUD_APP_URL missing in environment variables");
+}
 const app = (0, express_1.default)();
-const port = process.env.PORT;
+// Disable header "x-powered-by: express"
+app.disable("x-powered-by");
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    origin: "http://localhost:3000",
+    origin: CLOUD_APP_URL,
     credentials: true,
+    methods: ["OPTIONS", "GET", "POST"],
 }));
+const limiter = (0, express_rate_limit_1.default)({
+    windowMs: 10 * 60 * 1000,
+    max: 30,
+    standardHeaders: true,
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+// Apply the rate limiting middleware to all requests
+app.use(limiter);
 app.use((0, express_session_1.default)({
-    name: "siwe-quickstart",
-    secret: "siwe-quickstart-secret",
+    name: COOKIE_NAME,
+    secret: COOKIE_SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: { secure: false, sameSite: true, httpOnly: true },
+    cookie: {
+        secure: process.env.NODE_ENV !== "dev",
+        sameSite: true,
+        httpOnly: true,
+    },
 }));
 app.get("/nonce", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         req.session.nonce = (0, siwe_1.generateNonce)();
-        res.setHeader("Content-Type", "text/plain");
-        res.status(200).send(req.session.nonce);
+        return res.status(200).json({ nonce: req.session.nonce });
     });
 });
 app.post("/connect", verify_1.verifyAndSignIn);
-app.get("/personal_information", function (req, res) {
-    if (!req.session.siwe) {
-        res.status(401).json({ message: "You have to first sign_in" });
-        return;
-    }
-    console.log("User is authenticated!");
-    res.setHeader("Content-Type", "text/plain");
-    res.send(`You are authenticated and your address is: ${req.session.siwe.address}`);
+// custom 404
+app.use((req, res, next) => {
+    return res.status(404).json({ error: "Sorry can't find that!" });
 });
-app.listen(port, () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+// custom error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    return res.status(500).json({ error: "Something went wrong!" });
+});
+app.listen(PORT, () => {
+    console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
 });
