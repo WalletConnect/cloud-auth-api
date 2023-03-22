@@ -60,6 +60,12 @@ export async function createOrUpdateUser(siweMsg: SiweMessage) {
           path: ["address"],
           equals: siweMsg.address,
         },
+        AND: {
+          raw_user_meta_data: {
+            path: ["chain_id"],
+            equals: siweMsg.chainId.toString(),
+          },
+        },
       },
     });
 
@@ -139,7 +145,11 @@ export async function createOrUpdateUser(siweMsg: SiweMessage) {
         instance_id: DEFAULT_INSTANCE_ID,
         last_sign_in_at: siweMsg.issuedAt,
         raw_app_meta_data: { provider: "eth", providers: ["eth"] },
-        raw_user_meta_data: { ...siweMsg },
+        raw_user_meta_data: {
+          address: siweMsg.address,
+          chain_id: siweMsg.chainId.toString(),
+          namespace: "eip155",
+        },
       },
     });
 

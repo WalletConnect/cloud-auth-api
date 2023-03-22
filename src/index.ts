@@ -15,12 +15,12 @@ declare module "express-session" {
   }
 }
 
-const { PORT, COOKIE_SECRET, COOKIE_NAME, CLOUD_APP_URL } = process.env;
+const { PORT, COOKIE_SECRET, COOKIE_NAME, CLOUD_APP_ORIGIN } = process.env;
 if (!COOKIE_SECRET) {
   throw new ReferenceError("COOKIE_SECRET missing in environment variables");
 }
-if (!CLOUD_APP_URL) {
-  throw new ReferenceError("CLOUD_APP_URL missing in environment variables");
+if (!CLOUD_APP_ORIGIN) {
+  throw new ReferenceError("CLOUD_APP_ORIGIN missing in environment variables");
 }
 
 const app = express();
@@ -31,7 +31,7 @@ app.disable("x-powered-by");
 app.use(express.json());
 app.use(
   cors({
-    origin: CLOUD_APP_URL,
+    origin: CLOUD_APP_ORIGIN,
     credentials: true,
     methods: ["OPTIONS", "GET", "POST"],
   })
