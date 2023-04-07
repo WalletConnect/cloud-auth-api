@@ -1,0 +1,69 @@
+name: Deploy to ECS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY_NAME: cloud-auth
+  ECS_CLUSTER_NAME: cloud-auth
+  ECS_SERVICE_NAME: cloud-auth-service
+  TASK_FAMILY_NAME: cloud-auth
+  PORT: 3333
+  CLOUD_APP_ORIGIN: ${{ secrets.CLOUD_APP_ORIGIN }}
+  SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+  COOKIE_NAME: ${{ secrets.COOKIE_NAME }}
+  COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+  DIRECT_URL: ${{ secrets.DIRECT_URL }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.0
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: ${{ env.AWS_REGION }}
+
+      - name: Build and push Docker image to Amazon ECR
+        run: |
+          docker build -t ${env.ECR_REPOSITORY_NAME}:${{ github.sha }} .
+          docker tag ${env.ECR_REPOSITORY_NAME}:${{ github.sha }} ${env.ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.ECR_REPOSITORY_NAME}:${{ github.sha }}
+          docker push ${env.ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.ECR_REPOSITORY_NAME}:${{ github.sha }}
+
+      - name: Deploy to Amazon ECS
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: "0.2.0"
+          working-directory: ./terraform
+          terraform-actions-command: "apply"
+          args: |
+            -var "AWS_REGION=${{ env.AWS_REGION }}"
+            -var "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}"
+            -var "ECR_REPOSITORY_NAME=${{ env.ECR_REPOSITORY_NAME }}"
+            -var "ECS_CLUSTER_NAME=${{ env.ECS_CLUSTER_NAME }}"
+            -var "ECS_SERVICE_NAME=${{ env.ECS_SERVICE_NAME }}"
+            -var "TASK_FAMILY_NAME=${{ env.TASK_FAMILY_NAME }}"
+            -var "PORT=${{ env.PORT }}"
+            -var "CLOUD_APP_ORIGIN=${{ env.CLOUD_APP_ORIGIN }}"
+            -var "SUPABASE_JWT_SECRET=${{ env.SUPABASE_JWT_SECRET }}"
+            -var "COOKIE_NAME=${{ env.COOKIE_NAME }}"
+            -var "COOKIE_SECRET=${{ env.COOKIE_SECRET }}"
+            -var "DIRECT_URL=${{ env.DIRECT_URL }}"
+            -var "DATABASE_URL=${{ env.DATABASE_URL }}"
