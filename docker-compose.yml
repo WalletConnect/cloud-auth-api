@@ -1,0 +1,14 @@
+version: "3"
+services:
+  api:
+    image: cloud-auth-api
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+      CLOUD_APP_ORIGIN: ${CLOUD_APP_ORIGIN}
+      SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      COOKIE_NAME: ${COOKIE_NAME}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      DIRECT_URL: ${DIRECT_URL}
+      DATABASE_URL: ${DATABASE_URL}

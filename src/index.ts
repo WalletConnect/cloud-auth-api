@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import Session from "express-session";
-import { generateNonce, SiweMessage } from "siwe";
+import { SiweMessage, generateNonce } from "siwe";
 
 import { verifyAndSignIn } from "./handlers/verify";
 dotenv.config();
@@ -79,6 +79,29 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   return res.status(500).json({ error: "Something went wrong!" });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
+});
+
+// Create a function to close the server and exit the process
+const exitProcess = () => {
+  console.log("Closing server and exiting process...");
+  server.close(() => {
+    console.log("Server closed.");
+    process.exit();
+  });
+};
+
+// Gracefully handle SIGINT (Ctrl+C) and SIGTERM (docker stop)
+process.on("SIGINT", exitProcess);
+process.on("SIGTERM", exitProcess);
+
+// Gracefully handle uncaught exceptions and rejections
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception:", err);
+  exitProcess();
+});
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled rejection:", err);
+  exitProcess();
 });
