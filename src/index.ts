@@ -61,6 +61,10 @@ app.use(
   })
 );
 
+app.get("/health", async function(req, res) {
+  return res.status(200).json({ status: "OK" })
+})
+
 app.get("/nonce", async function (req, res) {
   req.session.nonce = generateNonce();
   return res.status(200).json({ nonce: req.session.nonce });
