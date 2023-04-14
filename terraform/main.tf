@@ -65,14 +65,12 @@ module "ecs" {
 
   app_name               = "${local.environment}-${local.app_name}"
   environment            = local.environment
-  prometheus_endpoint    = aws_prometheus_workspace.prometheus.prometheus_endpoint
   image                  = "${data.aws_ecr_repository.repository.repository_url}:${local.version}"
   image_version          = local.version
   acm_certificate_arn    = module.dns.certificate_arn
   cpu                    = 512
   fqdn                   = local.fqdn
   memory                 = 1024
-  cloud_app_origin = var.cloud_app_origin
   private_subnets        = module.vpc.private_subnets
   public_subnets         = module.vpc.public_subnets
   region                 = var.region
@@ -83,6 +81,13 @@ module "ecs" {
   autoscaling_max_capacity = local.environment == "prod" ? 4 : 1
   autoscaling_min_capacity = local.environment == "prod" ? 2 : 1
   desired_count            = local.environment == "prod" ? 2 : 1
+
+  cloud_app_origin = var.cloud_app_origin
+  database_url = var.database_url
+  direct_url = var.direct_url
+  cookie_name = var.cookie_name
+  cookie_secret = var.cookie_secret
+  supabase_jwt_secret = var.supabase_jwt_secret
 }
 
 data "aws_ecr_repository" "repository" {

@@ -70,7 +70,11 @@ resource "aws_ecs_task_definition" "app_task_definition" {
         { name = "NODE_ENV", value = "prod" },
         { name = "PORT", value = "8080" },
         { name = "CLOUD_APP_ORIGIN", value = var.cloud_app_origin },
-        { name = "COOKIE_NAME", value = "sb-token" },
+        { name = "COOKIE_NAME", value = var.cookie_name },
+        { name = "COOKIE_SECRET", value = var.cookie_secret },
+        { name = "DATABASE_URL", value = var.database_url },
+        { name = "DIRECT_URL", value = var.direct_url },
+        { name = "SUPABASE_JWT_SECRET", value = var.supabase_jwt_secret },
       ],
       dependsOn = [
         { containerName = "aws-otel-collector", condition = "START" }
