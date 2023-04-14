@@ -1,0 +1,103 @@
+name: cd
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "terraform/**"
+  release:
+    types: ["published"]
+
+concurrency:
+  # Only allow for one action to run at once, queue any others
+  group: cd
+  # Don't cancel existing
+  cancel-in-progress: false
+
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.clean_version.outputs.version }}
+    steps:
+      - id: get
+        uses: actions/github-script@v6
+        env:
+          LATEST_TAG: ${{ steps.latest_release.outputs.release }}
+        with:
+          result-encoding: string
+          script: |
+            if (context.eventName == "release") {
+              return context.payload.release.tag_name
+            } else {
+              return ""
+            }
+
+      - id: clean_version
+        run: |
+          version=$(echo "${{ steps.get.outputs.result }}" | sed 's/v//g')
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+  deploy-infra-staging:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.cloud-auth-api.walletconnect.com/health
+    needs:
+      - get-version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: deploy-staging
+        uses: WalletConnect/actions/actions/deploy-terraform/@master
+        env:
+          TF_VAR_cloud_app_origin: ${{ secrets.CLOUD_APP_ORIGIN }}
+          TF_VAR_supabase_jwt_secret: ${{ secrets.SUPABASE_JWT_SECRET }}
+          TF_VAR_cookie_name: ${{ secrets.COOKIE_NAME }}
+          TF_VAR_cookie_secret: ${{ secrets.COOKIE_SECRET }}
+          TF_VAR_direct_url: ${{ secrets.DIRECT_URL }}
+          TF_VAR_database_url: ${{ secrets.DATABASE_URL }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+          environment: staging
+          app-name: ${{ github.event.repository.name }}
+
+  # TODO add validation
+  # validate-staging:
+  #   needs: [deploy-infra-staging]
+  #   uses: ./.github/workflows/validate.yml
+  #   with:
+  #     environment: 'staging'
+
+  deploy-infra-prod:
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+      url: https://cloud-auth-api.walletconnect.com/health
+    needs:
+      - get-version
+      # - validate-staging
+      - deploy-infra-staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: deploy-staging
+        uses: WalletConnect/actions/actions/deploy-terraform/@master
+        env:
+          TF_VAR_cloud_app_origin: ${{ secrets.CLOUD_APP_ORIGIN }}
+          TF_VAR_supabase_jwt_secret: ${{ secrets.SUPABASE_JWT_SECRET }}
+          TF_VAR_cookie_name: ${{ secrets.COOKIE_NAME }}
+          TF_VAR_cookie_secret: ${{ secrets.COOKIE_SECRET }}
+          TF_VAR_direct_url: ${{ secrets.DIRECT_URL }}
+          TF_VAR_database_url: ${{ secrets.DATABASE_URL }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+          environment: prod
+          app-name: ${{ github.event.repository.name }}
