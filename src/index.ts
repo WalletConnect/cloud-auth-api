@@ -92,7 +92,7 @@ const exitProcess = () => {
   console.log("Closing server and exiting process...");
   server.close(() => {
     console.log("Server closed.");
-    process.exit();
+    process.exit(1);
   });
 };
 
