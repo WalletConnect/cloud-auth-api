@@ -34,7 +34,8 @@ jobs:
       - name: "Update Github release notes"
         uses: softprops/action-gh-release@v1
         with:
-          body_path: GITHUB_CHANGELOG.md
+          #body_path: GITHUB_CHANGELOG.md
+          body: "Generated Release"
           tag_name: ${{ steps.release.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
