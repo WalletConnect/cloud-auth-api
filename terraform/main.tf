@@ -78,9 +78,10 @@ module "ecs" {
   vpc_cidr               = module.vpc.vpc_cidr_block
   vpc_id                 = module.vpc.vpc_id
 
-  autoscaling_max_capacity = local.environment == "prod" ? 4 : 1
-  autoscaling_min_capacity = local.environment == "prod" ? 2 : 1
-  desired_count            = local.environment == "prod" ? 2 : 1
+  // Note: Stores nonces in memory cannot be scaled!
+  autoscaling_max_capacity = local.environment == "prod" ? 1 : 1
+  autoscaling_min_capacity = local.environment == "prod" ? 1 : 1
+  desired_count            = local.environment == "prod" ? 1 : 1
 
   cloud_app_origin = var.cloud_app_origin
   database_url = var.database_url
