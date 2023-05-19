@@ -40,36 +40,3 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_xray_policy" 
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
 }
-
-# OpenTelemetry
-data "aws_iam_policy_document" "otel" {
-  statement {
-    actions = [
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:DescribeLogStreams",
-      "logs:DescribeLogGroups",
-      "xray:PutTraceSegments",
-      "xray:PutTelemetryRecords",
-      "xray:GetSamplingRules",
-      "xray:GetSamplingTargets",
-      "xray:GetSamplingStatisticSummaries",
-      "ssm:GetParameters",
-    ]
-    resources = [
-      "*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "otel" {
-  name   = "${var.app_name}-otel"
-  path   = "/"
-  policy = data.aws_iam_policy_document.otel.json
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_fetch_ghcr_secret_policy" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.otel.arn
-}

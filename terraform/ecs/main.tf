@@ -1,9 +1,6 @@
 locals {
   file_descriptor_soft_limit = pow(2, 18)
   file_descriptor_hard_limit = local.file_descriptor_soft_limit * 2
-
-  otel_collector_image_tag = "v0.2.0"
-  otel_collector_image     = "${var.aws_otel_collector_ecr_repository_url}:${local.otel_collector_image_tag}"
 }
 
 # Log Group for our App
@@ -75,9 +72,6 @@ resource "aws_ecs_task_definition" "app_task_definition" {
         { name = "DATABASE_URL", value = var.database_url },
         { name = "DIRECT_URL", value = var.direct_url },
         { name = "SUPABASE_JWT_SECRET", value = var.supabase_jwt_secret },
-      ],
-      dependsOn = [
-        { containerName = "aws-otel-collector", condition = "START" }
       ],
       logConfiguration = {
         logDriver = "awslogs",
