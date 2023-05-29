@@ -54,3 +54,8 @@ This API has the following endpoints:
 - `GET /nonce` - Gets a nonce.
 - `POST /connect` - Creates a new user along with a session, an identity and gerenates access and refresh tokens.
   If the user already exists, it'll get updated and new access and refresh tokens will be generated.
+
+## Health checks
+
+- Staging: https://staging.cloud-auth-api.walletconnect.com/health
+- Production: https://cloud-auth-api.walletconnect.com/health
