@@ -6,7 +6,7 @@ services:
       - ${PORT}:${PORT}
     environment:
       PORT: ${PORT}
-      CLOUD_APP_ORIGIN: ${CLOUD_APP_ORIGIN}
+      NODE_ENV: ${NODE_ENV}
       SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
       COOKIE_NAME: ${COOKIE_NAME}
       COOKIE_SECRET: ${COOKIE_SECRET}

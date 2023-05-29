@@ -83,7 +83,7 @@ module "ecs" {
   autoscaling_min_capacity = local.environment == "prod" ? 1 : 1
   desired_count            = local.environment == "prod" ? 1 : 1
 
-  cloud_app_origin = var.cloud_app_origin
+  node_env = var.node_env
   database_url = var.database_url
   direct_url = var.direct_url
   cookie_name = var.cookie_name

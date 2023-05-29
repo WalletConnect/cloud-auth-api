@@ -64,9 +64,8 @@ resource "aws_ecs_task_definition" "app_task_definition" {
         }
       ],
       environment = [
-        { name = "NODE_ENV", value = "prod" },
+        { name = "NODE_ENV", value = var.node_env },
         { name = "PORT", value = "8080" },
-        { name = "CLOUD_APP_ORIGIN", value = var.cloud_app_origin },
         { name = "COOKIE_NAME", value = var.cookie_name },
         { name = "COOKIE_SECRET", value = var.cookie_secret },
         { name = "DATABASE_URL", value = var.database_url },

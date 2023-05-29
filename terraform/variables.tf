@@ -18,10 +18,9 @@ variable "image_version" {
   default = ""
 }
 
-variable "cloud_app_origin" {
+variable "node_env" {
   type = string
 }
-
 variable "database_url" {
   type = string
   sensitive = true
@@ -44,4 +43,8 @@ variable "cookie_secret" {
 variable "supabase_jwt_secret" {
   type = string
   sensitive = true
+}
+
+variable "environment" {
+  type = string
 }

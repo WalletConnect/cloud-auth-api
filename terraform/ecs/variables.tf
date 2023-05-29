@@ -66,7 +66,7 @@ variable "autoscaling_min_capacity" {
   type = number
 }
 
-variable "cloud_app_origin" {
+variable "node_env" {
   type = string
 }
 
