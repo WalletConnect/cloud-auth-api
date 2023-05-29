@@ -53,7 +53,7 @@ jobs:
       - id: deploy-staging
         uses: WalletConnect/actions/actions/deploy-terraform/@master
         env:
-          TF_VAR_cloud_app_origin: ${{ secrets.CLOUD_APP_ORIGIN }}
+          TF_VAR_node_env: staging
           TF_VAR_supabase_jwt_secret: ${{ secrets.SUPABASE_JWT_SECRET }}
           TF_VAR_cookie_name: ${{ secrets.COOKIE_NAME }}
           TF_VAR_cookie_secret: ${{ secrets.COOKIE_SECRET }}
@@ -86,10 +86,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - id: deploy-staging
+      - id: deploy-prod
         uses: WalletConnect/actions/actions/deploy-terraform/@master
         env:
-          TF_VAR_cloud_app_origin: ${{ secrets.CLOUD_APP_ORIGIN }}
+          TF_VAR_node_env: production
+
           TF_VAR_supabase_jwt_secret: ${{ secrets.SUPABASE_JWT_SECRET }}
           TF_VAR_cookie_name: ${{ secrets.COOKIE_NAME }}
           TF_VAR_cookie_secret: ${{ secrets.COOKIE_SECRET }}
