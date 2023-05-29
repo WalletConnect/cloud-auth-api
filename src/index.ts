@@ -1,11 +1,11 @@
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import Session from "express-session";
 import { SiweMessage, generateNonce } from "siwe";
-
 import { verifyAndSignIn } from "./handlers/verify";
+
 dotenv.config();
 
 declare module "express-session" {
@@ -15,12 +15,9 @@ declare module "express-session" {
   }
 }
 
-const { PORT, COOKIE_SECRET, COOKIE_NAME, CLOUD_APP_ORIGIN } = process.env;
+const { PORT, COOKIE_SECRET, COOKIE_NAME } = process.env;
 if (!COOKIE_SECRET) {
   throw new ReferenceError("COOKIE_SECRET missing in environment variables");
-}
-if (!CLOUD_APP_ORIGIN) {
-  throw new ReferenceError("CLOUD_APP_ORIGIN missing in environment variables");
 }
 
 const app = express();
@@ -29,13 +26,33 @@ const app = express();
 app.disable("x-powered-by");
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: CLOUD_APP_ORIGIN,
-    credentials: true,
-    methods: ["OPTIONS", "GET", "POST"],
-  })
-);
+
+const isProd = process.env.NODE_ENV === "production";
+const allowedOrigins = isProd
+  ? ["https://cloud.walletconnect.com"]
+  : [
+      "http://localhost",
+      "https://wc-cloud-staging.vercel.app",
+      /\.?-walletconnect1\.vercel\.app$/,
+    ];
+
+const corsOptions: CorsOptions = {
+  credentials: true,
+  methods: ["OPTIONS", "GET", "POST"],
+  origin: (origin, callback) => {
+    if (
+      !origin ||
+      allowedOrigins.some((allowedOrigin) =>
+        new RegExp(allowedOrigin).test(origin)
+      )
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+app.use(cors(corsOptions));
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
@@ -54,16 +71,16 @@ app.use(
     resave: true,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV !== "dev",
-      sameSite: true,
+      secure: isProd,
+      sameSite: isProd,
       httpOnly: true,
     },
   })
 );
 
-app.get("/health", async function(req, res) {
-  return res.status(200).json({ status: "OK" })
-})
+app.get("/health", async function (req, res) {
+  return res.status(200).json({ status: "OK" });
+});
 
 app.get("/nonce", async function (req, res) {
   req.session.nonce = generateNonce();
@@ -84,7 +101,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 const server = app.listen(PORT, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
+  console.log(`⚡️[server]: Server is running on port ${PORT}`);
 });
 
 // Create a function to close the server and exit the process
