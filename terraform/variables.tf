@@ -22,12 +22,12 @@ variable "node_env" {
   type = string
 }
 variable "database_url" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "direct_url" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -36,15 +36,11 @@ variable "cookie_name" {
 }
 
 variable "cookie_secret" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "supabase_jwt_secret" {
-  type = string
+  type      = string
   sensitive = true
-}
-
-variable "environment" {
-  type = string
 }

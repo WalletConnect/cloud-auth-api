@@ -63,31 +63,31 @@ module "dns" {
 module "ecs" {
   source = "./ecs"
 
-  app_name               = "${local.environment}-${local.app_name}"
-  environment            = local.environment
-  image                  = "${data.aws_ecr_repository.repository.repository_url}:${local.version}"
-  image_version          = local.version
-  acm_certificate_arn    = module.dns.certificate_arn
-  cpu                    = 512
-  fqdn                   = local.fqdn
-  memory                 = 1024
-  private_subnets        = module.vpc.private_subnets
-  public_subnets         = module.vpc.public_subnets
-  region                 = var.region
-  route53_zone_id        = module.dns.zone_id
-  vpc_cidr               = module.vpc.vpc_cidr_block
-  vpc_id                 = module.vpc.vpc_id
+  app_name            = "${local.environment}-${local.app_name}"
+  environment         = local.environment
+  image               = "${data.aws_ecr_repository.repository.repository_url}:${local.version}"
+  image_version       = local.version
+  acm_certificate_arn = module.dns.certificate_arn
+  cpu                 = 512
+  fqdn                = local.fqdn
+  memory              = 1024
+  private_subnets     = module.vpc.private_subnets
+  public_subnets      = module.vpc.public_subnets
+  region              = var.region
+  route53_zone_id     = module.dns.zone_id
+  vpc_cidr            = module.vpc.vpc_cidr_block
+  vpc_id              = module.vpc.vpc_id
 
   // Note: Stores nonces in memory cannot be scaled!
   autoscaling_max_capacity = local.environment == "prod" ? 1 : 1
   autoscaling_min_capacity = local.environment == "prod" ? 1 : 1
   desired_count            = local.environment == "prod" ? 1 : 1
 
-  node_env = var.node_env
-  database_url = var.database_url
-  direct_url = var.direct_url
-  cookie_name = var.cookie_name
-  cookie_secret = var.cookie_secret
+  node_env            = var.node_env
+  database_url        = var.database_url
+  direct_url          = var.direct_url
+  cookie_name         = var.cookie_name
+  cookie_secret       = var.cookie_secret
   supabase_jwt_secret = var.supabase_jwt_secret
 }
 
