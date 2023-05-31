@@ -3,10 +3,12 @@ import jwt from "jsonwebtoken";
 import { SiweMessage } from "siwe";
 import {
   DEFAULT_INSTANCE_ID,
-  secureToken,
   SEVEN_DAYS_IN_SECONDS,
+  secureToken,
 } from "../utils";
 import { GoTrueClaims, TPrismaTransaction } from "../utils/types";
+
+const prisma = new PrismaClient();
 
 export const generateAccessToken = async (
   user: users,
@@ -51,8 +53,6 @@ export const generateAccessToken = async (
 };
 
 export async function createOrUpdateUser(siweMsg: SiweMessage) {
-  const prisma = new PrismaClient();
-
   const tokens = await prisma.$transaction(async (tx) => {
     const existingUser = await tx.users.findFirst({
       where: {
