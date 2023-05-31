@@ -40,19 +40,25 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
     req.session.siwe = undefined;
     req.session.nonce = undefined;
     console.error(e);
-    switch (e) {
-      case ErrorTypes.EXPIRED_MESSAGE: {
-        req.session.save(() => res.status(440).json({ message: e.message }));
-        break;
+    try {
+      switch (e) {
+        case ErrorTypes.EXPIRED_MESSAGE: {
+          req.session.save(() => res.status(440).json({ message: e.message }));
+          break;
+        }
+        case ErrorTypes.INVALID_SIGNATURE: {
+          req.session.save(() => res.status(422).json({ message: e.message }));
+          break;
+        }
+        default: {
+          req.session.save(() => res.status(500).json({ message: e.message }));
+          break;
+        }
       }
-      case ErrorTypes.INVALID_SIGNATURE: {
-        req.session.save(() => res.status(422).json({ message: e.message }));
-        break;
-      }
-      default: {
-        req.session.save(() => res.status(500).json({ message: e.message }));
-        break;
-      }
+    } catch (sessionError) {
+      console.error(`Failed to save session, ${JSON.stringify(sessionError)}`);
     }
+
+    return;
   }
 };
