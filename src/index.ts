@@ -54,16 +54,6 @@ const corsOptions: CorsOptions = {
 };
 app.use(cors(corsOptions));
 
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 30, // Limit each IP to 30 requests per `window` (here, per 10 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
-
-// Apply the rate limiting middleware to all requests
-app.use(limiter);
-
 app.use(
   Session({
     name: COOKIE_NAME,
@@ -77,6 +67,16 @@ app.use(
     },
   })
 );
+
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 200, // Limit each IP to 200 requests per `window` (here, per 10 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Apply the rate limiting middleware to all requests
+app.use(limiter);
 
 app.get("/health", async function (req, res) {
   return res.status(200).json({ status: "OK" });
@@ -107,22 +107,18 @@ const server = app.listen(PORT, () => {
 // Create a function to close the server and exit the process
 const exitProcess = () => {
   console.log("Closing server and exiting process...");
-  server.close(() => {
+  return server.close(() => {
     console.log("Server closed.");
-    process.exit(1);
+    return process.exit(1);
   });
 };
 
-// Gracefully handle SIGINT (Ctrl+C) and SIGTERM (docker stop)
-process.on("SIGINT", exitProcess);
-process.on("SIGTERM", exitProcess);
-
 // Gracefully handle uncaught exceptions and rejections
 process.on("uncaughtException", (err) => {
-  console.error("Uncaught exception:", err);
-  exitProcess();
+  console.log(`Uncaught exception: ${JSON.stringify(err)}`);
+  return exitProcess();
 });
 process.on("unhandledRejection", (err) => {
-  console.error("Unhandled rejection:", err);
-  exitProcess();
+  console.log(`Unhandled rejection: ${JSON.stringify(err)}`);
+  return exitProcess();
 });
