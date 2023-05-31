@@ -16,6 +16,9 @@ declare module "express-session" {
 }
 
 const { PORT, COOKIE_SECRET, COOKIE_NAME } = process.env;
+if (!COOKIE_NAME) {
+  throw new ReferenceError("COOKIE_NAME missing in environment variables");
+}
 if (!COOKIE_SECRET) {
   throw new ReferenceError("COOKIE_SECRET missing in environment variables");
 }
@@ -88,6 +91,16 @@ app.get("/nonce", async function (req, res) {
 });
 
 app.post("/connect", verifyAndSignIn);
+
+app.post("/disconnect", async function (req, res) {
+  res.clearCookie(COOKIE_NAME);
+  return req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to destroy session" });
+    }
+    return res.status(200).json({ status: "Disconnected" });
+  });
+});
 
 // custom 404
 app.use((req, res, next) => {
