@@ -57,6 +57,7 @@ jobs:
           TF_VAR_supabase_jwt_secret: ${{ secrets.SUPABASE_JWT_SECRET }}
           TF_VAR_cookie_name: ${{ secrets.COOKIE_NAME }}
           TF_VAR_cookie_secret: ${{ secrets.COOKIE_SECRET }}
+          TF_VAR_hcaptcha_secret: ${{ secrets.HCAPTCHA_SECRET }}
           TF_VAR_direct_url: ${{ secrets.DIRECT_URL }}
           TF_VAR_database_url: ${{ secrets.DATABASE_URL }}
         with:
@@ -94,6 +95,7 @@ jobs:
           TF_VAR_supabase_jwt_secret: ${{ secrets.SUPABASE_JWT_SECRET }}
           TF_VAR_cookie_name: ${{ secrets.COOKIE_NAME }}
           TF_VAR_cookie_secret: ${{ secrets.COOKIE_SECRET }}
+          TF_VAR_hcaptcha_secret: ${{ secrets.HCAPTCHA_SECRET }}
           TF_VAR_direct_url: ${{ secrets.DIRECT_URL }}
           TF_VAR_database_url: ${{ secrets.DATABASE_URL }}
         with:

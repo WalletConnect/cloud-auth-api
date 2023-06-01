@@ -21,6 +21,7 @@ variable "image_version" {
 variable "node_env" {
   type = string
 }
+
 variable "database_url" {
   type      = string
   sensitive = true
@@ -36,6 +37,11 @@ variable "cookie_name" {
 }
 
 variable "cookie_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "hcaptcha_secret" {
   type      = string
   sensitive = true
 }
