@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import Session from "express-session";
 import { SiweMessage, generateNonce } from "siwe";
 import { verifyAndSignIn } from "./handlers/verify";
+import { captchaVerification } from "./middlewares/captchaVerification";
 
 dotenv.config();
 
@@ -85,12 +86,12 @@ app.get("/health", async function (req, res) {
   return res.status(200).json({ status: "OK" });
 });
 
-app.get("/nonce", async function (req, res) {
+app.get("/nonce", captchaVerification, async function (req, res) {
   req.session.nonce = generateNonce();
   return res.status(200).json({ nonce: req.session.nonce });
 });
 
-app.post("/connect", verifyAndSignIn);
+app.post("/connect", captchaVerification, verifyAndSignIn);
 
 app.post("/disconnect", async function (req, res) {
   res.clearCookie(COOKIE_NAME);

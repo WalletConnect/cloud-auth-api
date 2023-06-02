@@ -88,6 +88,7 @@ module "ecs" {
   direct_url          = var.direct_url
   cookie_name         = var.cookie_name
   cookie_secret       = var.cookie_secret
+  hcaptcha_secret     = var.hcaptcha_secret
   supabase_jwt_secret = var.supabase_jwt_secret
 }
 

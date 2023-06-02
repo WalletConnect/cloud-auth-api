@@ -89,6 +89,11 @@ variable "cookie_secret" {
   sensitive = true
 }
 
+variable "hcaptcha_secret" {
+  type      = string
+  sensitive = true
+}
+
 variable "supabase_jwt_secret" {
   type      = string
   sensitive = true
