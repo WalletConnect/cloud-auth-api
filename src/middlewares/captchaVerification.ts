@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import fetch from "node-fetch";
 
 export const captchaVerification = async (
   req: Request,
@@ -8,6 +9,19 @@ export const captchaVerification = async (
   if (process.env.NODE_ENV === "development") {
     return next();
   }
+
+  const captchaSecret = process.env.HCAPTCHA_SECRET;
+  if (!captchaSecret) {
+    throw new Error("Missing captcha secret environment varialbe");
+  }
+
+  const captchaToken = req.headers["captcha-token"];
+  if (!captchaToken) {
+    return res
+      .status(400)
+      .json({ error: "Bad request - missing 'captcha-token' header" });
+  }
+
   try {
     const hCaptchaResponse = await fetch("https://hcaptcha.com/siteverify", {
       method: "POST",
@@ -17,7 +31,7 @@ export const captchaVerification = async (
       }),
     });
 
-    const { success } = await hCaptchaResponse.json();
+    const { success } = (await hCaptchaResponse.json()) as { success: boolean };
 
     if (!success) {
       return res.status(403).json({ error: "hCaptcha verification failed" });
