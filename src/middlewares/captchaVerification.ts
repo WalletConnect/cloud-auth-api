@@ -14,11 +14,11 @@ export const captchaVerification = async (
     throw new Error("Missing captcha secret environment variable");
   }
 
-  const captchaToken = req.headers["captcha-token"];
+  const captchaToken = req.body["captchaToken"];
   if (!captchaToken) {
     return res
       .status(400)
-      .json({ error: "Bad request - missing 'captcha-token' header" });
+      .json({ error: "Bad request - missing 'captchaToken' in body" });
   }
 
   try {
