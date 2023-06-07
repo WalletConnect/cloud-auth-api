@@ -22,7 +22,7 @@
     "express-rate-limit": "^6.7.0",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
-    "node-fetch": "^3.3.1",
+    "node-fetch": "^2.6.7",
     "siwe": "^1.1.6"
   },
   "devDependencies": {
@@ -32,6 +32,7 @@
     "@types/express-session": "^1.17.6",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.14.4",
+    "@types/node-fetch": "^2.6.4",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.20",
     "prisma": "^4.11.0",
