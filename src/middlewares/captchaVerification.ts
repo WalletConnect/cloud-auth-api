@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import fetch from "node-fetch";
 
 export const captchaVerification = async (
   req: Request,

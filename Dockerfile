@@ -1,5 +1,5 @@
 # Build stage
-FROM node:16.17.0-bullseye-slim as build
+FROM node:18.16.0-bullseye-slim as build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:16.17.0-bullseye-slim as production
+FROM node:18.16.0-bullseye-slim as production
 
 # Set the working directory inside the container
 WORKDIR /app
