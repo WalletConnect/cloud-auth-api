@@ -46,6 +46,7 @@ const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     if (
       !origin ||
+      process.env.NODE_ENV === "development" ||
       allowedOrigins.some((allowedOrigin) =>
         new RegExp(allowedOrigin).test(origin)
       )

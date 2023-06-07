@@ -22,17 +22,19 @@ export const captchaVerification = async (
   }
 
   try {
-    const hCaptchaResponse = await fetch("https://hcaptcha.com/siteverify", {
-      method: "POST",
-      body: JSON.stringify({
-        response: req.headers["captcha-token"],
-        secret: process.env.HCAPTCHA_SECRET,
-      }),
-    });
+    const hCaptchaRawResponse = await fetch(
+      `https://hcaptcha.com/siteverify?secret=${captchaSecret}&response=${captchaToken}`,
+      {
+        method: "POST",
+      }
+    );
+    const hCaptchaResponse = (await hCaptchaRawResponse.json()) as {
+      success: boolean;
+      challenge_ts: string;
+      hostname: string;
+    };
 
-    const { success } = (await hCaptchaResponse.json()) as { success: boolean };
-
-    if (!success) {
+    if (!hCaptchaResponse?.success) {
       return res.status(403).json({ error: "hCaptcha verification failed" });
     }
     next();
