@@ -28,7 +28,7 @@ const app = express();
 
 // Disable header "x-powered-by: express"
 app.disable("x-powered-by");
-
+// Enable body parser
 app.use(express.json());
 
 const isProd = process.env.NODE_ENV === "production";
