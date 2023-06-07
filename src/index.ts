@@ -28,7 +28,7 @@ const app = express();
 
 // Disable header "x-powered-by: express"
 app.disable("x-powered-by");
-
+// Enable body parser
 app.use(express.json());
 
 const isProd = process.env.NODE_ENV === "production";
@@ -86,7 +86,7 @@ app.get("/health", async function (req, res) {
   return res.status(200).json({ status: "OK" });
 });
 
-app.get("/nonce", captchaVerification, async function (req, res) {
+app.post("/nonce", captchaVerification, async function (req, res) {
   req.session.nonce = generateNonce();
   return res.status(200).json({ nonce: req.session.nonce });
 });
