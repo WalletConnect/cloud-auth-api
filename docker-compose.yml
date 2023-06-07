@@ -1,6 +1,7 @@
 version: "3"
 services:
   api:
+    build: .
     image: cloud-auth-api
     ports:
       - ${PORT}:${PORT}

@@ -21,10 +21,9 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
     }
     req.session.siwe = fields;
     if (!fields.expirationTime) {
-      res.status(422).json({
+      return res.status(422).json({
         message: `Expected expirationTime to be set.`,
       });
-      return;
     }
     req.session.cookie.expires = new Date(fields.expirationTime);
 
@@ -37,9 +36,9 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
       });
     });
   } catch (e: any) {
+    console.error(e);
     req.session.siwe = undefined;
     req.session.nonce = undefined;
-    console.error(e);
     try {
       switch (e) {
         case ErrorTypes.EXPIRED_MESSAGE: {
