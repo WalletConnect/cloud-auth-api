@@ -90,6 +90,9 @@ module "ecs" {
   cookie_secret       = var.cookie_secret
   hcaptcha_secret     = var.hcaptcha_secret
   supabase_jwt_secret = var.supabase_jwt_secret
+  redis_host          = var.redis_host
+  redis_port          = var.redis_port
+  redis_password      = var.redis_password
 }
 
 data "aws_ecr_repository" "repository" {

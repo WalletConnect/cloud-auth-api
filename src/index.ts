@@ -18,12 +18,25 @@ declare module "express-session" {
   }
 }
 
-const { PORT, COOKIE_SECRET, COOKIE_NAME, REDIS_PASSWORD } = process.env;
+const {
+  PORT,
+  COOKIE_SECRET,
+  COOKIE_NAME,
+  REDIS_PASSWORD,
+  REDIS_HOST,
+  REDIS_PORT,
+} = process.env;
 if (!COOKIE_NAME) {
   throw new ReferenceError("COOKIE_NAME missing in environment variables");
 }
 if (!COOKIE_SECRET) {
   throw new ReferenceError("COOKIE_SECRET missing in environment variables");
+}
+if (!REDIS_HOST) {
+  throw new ReferenceError("REDIS_HOST missing in environment variables");
+}
+if (!REDIS_HOST) {
+  throw new ReferenceError("REDIS_HOST missing in environment variables");
 }
 if (!REDIS_PASSWORD) {
   throw new ReferenceError("REDIS_PASSWORD missing in environment variables");
@@ -31,8 +44,8 @@ if (!REDIS_PASSWORD) {
 
 // Initialize redis client
 const redisClient = new Redis({
-  host: "redis",
-  port: 6379,
+  host: REDIS_HOST ?? "redis",
+  port: REDIS_PORT ? parseInt(REDIS_PORT, 10) : 6379,
   password: REDIS_PASSWORD,
 });
 

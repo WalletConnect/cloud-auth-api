@@ -50,3 +50,16 @@ variable "supabase_jwt_secret" {
   type      = string
   sensitive = true
 }
+
+variable "redis_host" {
+  type      = string
+  sensitive = true
+}
+variable "redis_port" {
+  type      = string
+  sensitive = true
+}
+variable "redis_password" {
+  type      = string
+  sensitive = true
+}
