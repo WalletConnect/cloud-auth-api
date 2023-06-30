@@ -36,28 +36,3 @@ resource "aws_security_group" "service_security_group" {
     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
   }
 }
-
-# DNS
-resource "aws_route53_zone" "private_zone" {
-  name = (
-    terraform.workspace == "prod" ?
-    replace("redis-cloud-auth-api.${var.redis_name}.internal", "_", "-") :
-    replace("${terraform.workspace}.${var.redis_name}.redis-cloud-auth-api.internal", "_", "-")
-  )
-
-  vpc {
-    vpc_id = var.vpc_id
-  }
-
-  lifecycle {
-    ignore_changes = [vpc]
-  }
-}
-
-resource "aws_route53_record" "dns" {
-  zone_id = aws_route53_zone.private_zone.id
-  name    = "${replace("${var.redis_name}-redis", "_", "-")}.${aws_route53_zone.private_zone.name}"
-  type    = "CNAME"
-  ttl     = "30"
-  records = [for cache_node in aws_elasticache_cluster.cache.cache_nodes : cache_node.address]
-}
