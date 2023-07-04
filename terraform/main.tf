@@ -90,8 +90,29 @@ module "ecs" {
   cookie_secret       = var.cookie_secret
   hcaptcha_secret     = var.hcaptcha_secret
   supabase_jwt_secret = var.supabase_jwt_secret
+  redis_host          = var.redis_host
+  redis_port          = var.redis_port
+  redis_password      = var.redis_password
 }
 
 data "aws_ecr_repository" "repository" {
   name = "cloud-auth-api"
+}
+
+module "redis_global" {
+  source = "./redis"
+
+  redis_name = "cloud-auth-redis"
+  app_name   = "${terraform.workspace}_redis_${local.app_name}"
+  vpc_id     = module.eu-central-1.vpc_id
+  node_type  = var.redis_node_type
+  global     = true
+
+  private_subnet_ids = module.eu-central-1.private_subnets
+
+  allowed_ingress_cidr_blocks = tolist(toset([
+    module.us-east-1.cidr_block,
+    module.eu-central-1.cidr_block,
+    module.ap-southeast-1.cidr_block
+  ]))
 }

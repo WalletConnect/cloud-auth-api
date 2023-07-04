@@ -14,3 +14,19 @@ services:
       HCAPTCHA_SECRET: ${HCAPTCHA_SECRET}
       DIRECT_URL: ${DIRECT_URL}
       DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      redis:
+        condition: service_healthy
+    links:
+      - redis
+  redis:
+    image: redis:6.2.12
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    ports:
+      - "6379:6379"
