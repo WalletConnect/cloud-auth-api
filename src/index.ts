@@ -1,8 +1,10 @@
+import RedisStore from "connect-redis";
 import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import Session from "express-session";
+import { Redis } from "ioredis";
 import { SiweMessage, generateNonce } from "siwe";
 import { verifyAndSignIn } from "./handlers/verify";
 import { captchaVerification } from "./middlewares/captchaVerification";
@@ -16,13 +18,42 @@ declare module "express-session" {
   }
 }
 
-const { PORT, COOKIE_SECRET, COOKIE_NAME } = process.env;
+const {
+  PORT,
+  COOKIE_SECRET,
+  COOKIE_NAME,
+  REDIS_PASSWORD,
+  REDIS_HOST,
+  REDIS_PORT,
+} = process.env;
 if (!COOKIE_NAME) {
   throw new ReferenceError("COOKIE_NAME missing in environment variables");
 }
 if (!COOKIE_SECRET) {
   throw new ReferenceError("COOKIE_SECRET missing in environment variables");
 }
+if (!REDIS_HOST) {
+  throw new ReferenceError("REDIS_HOST missing in environment variables");
+}
+if (!REDIS_HOST) {
+  throw new ReferenceError("REDIS_HOST missing in environment variables");
+}
+if (!REDIS_PASSWORD) {
+  throw new ReferenceError("REDIS_PASSWORD missing in environment variables");
+}
+
+// Initialize redis client
+const redisClient = new Redis({
+  host: REDIS_HOST ?? "redis",
+  port: REDIS_PORT ? parseInt(REDIS_PORT, 10) : 6379,
+  password: REDIS_PASSWORD,
+});
+
+// Initialize connect-redis store for express-session
+const redisStore = new RedisStore({
+  client: redisClient,
+  prefix: "cloud-auth:",
+});
 
 const app = express();
 
@@ -65,6 +96,7 @@ app.use(
     secret: COOKIE_SECRET,
     resave: true,
     saveUninitialized: true,
+    store: redisStore,
     cookie: {
       secure: isProd,
       sameSite: isProd,
@@ -84,6 +116,9 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.get("/health", async function (req, res) {
+  await redisClient.set("test", "value");
+  const test = await redisClient.get("test");
+  console.log({ test });
   return res.status(200).json({ status: "OK" });
 });
 

@@ -72,6 +72,9 @@ resource "aws_ecs_task_definition" "app_task_definition" {
         { name = "DATABASE_URL", value = var.database_url },
         { name = "DIRECT_URL", value = var.direct_url },
         { name = "SUPABASE_JWT_SECRET", value = var.supabase_jwt_secret },
+        { name = "REDIS_PASSWORD", value = var.redis_password },
+        { name = "REDIS_HOST", value = var.redis_host },
+        { name = "REDIS_PORT", value = var.redis_port },
       ],
       logConfiguration = {
         logDriver = "awslogs",
