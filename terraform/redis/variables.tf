@@ -14,6 +14,10 @@ variable "allowed_ingress_cidr_blocks" {
   type = list(string)
 }
 
+variable "private_subnet_ids" {
+  type = list(string)
+}
+
 variable "vpc_id" {
   type = string
 }
