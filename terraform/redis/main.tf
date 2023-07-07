@@ -1,20 +1,6 @@
-resource "aws_elasticache_cluster" "cache" {
-  cluster_id           = replace("${var.app_name}-${var.redis_name}", "_", "-")
-  engine               = "redis"
-  node_type            = var.node_type
-  num_cache_nodes      = 1
-  parameter_group_name = "default.redis6.x"
-  engine_version       = "6.x"
-  port                 = 6379
-  subnet_group_name    = aws_elasticache_subnet_group.private_subnets.name
-  security_group_ids = [
-    aws_security_group.service_security_group.id
-  ]
-}
-
 resource "aws_elasticache_subnet_group" "private_subnets" {
   name       = replace("${var.app_name}-${var.redis_name}-private-subnet-group", "_", "-")
-  subnet_ids = data.aws_subnets.private_subnets.ids
+  subnet_ids = var.private_subnet_ids
 }
 
 # Allow only the app to access Redis
@@ -36,3 +22,19 @@ resource "aws_security_group" "service_security_group" {
     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
   }
 }
+
+resource "aws_elasticache_cluster" "cache" {
+  cluster_id           = replace("${var.app_name}-${var.redis_name}", "_", "-")
+  engine               = "redis"
+  node_type            = var.node_type
+  num_cache_nodes      = 1
+  parameter_group_name = "default.redis6.x"
+  engine_version       = "6.x"
+  port                 = 6379
+  subnet_group_name    = aws_elasticache_subnet_group.private_subnets.name
+  security_group_ids = [
+    aws_security_group.service_security_group.id
+  ]
+}
+
+

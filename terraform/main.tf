@@ -102,17 +102,11 @@ data "aws_ecr_repository" "repository" {
 module "redis_global" {
   source = "./redis"
 
-  redis_name = "cloud-auth-redis"
-  app_name   = "${terraform.workspace}_redis_${local.app_name}"
-  vpc_id     = module.eu-central-1.vpc_id
-  node_type  = var.redis_node_type
-  global     = true
+  redis_name         = "cloud-auth-redis"
+  app_name           = "${terraform.workspace}_redis_${local.app_name}"
+  vpc_id             = module.vpc.vpc_id
+  node_type          = "cache.t2.micro"
+  private_subnet_ids = module.vpc.private_subnets
 
-  private_subnet_ids = module.eu-central-1.private_subnets
-
-  allowed_ingress_cidr_blocks = tolist(toset([
-    module.us-east-1.cidr_block,
-    module.eu-central-1.cidr_block,
-    module.ap-southeast-1.cidr_block
-  ]))
+  allowed_ingress_cidr_blocks = module.vpc.private_subnets
 }
