@@ -31,7 +31,6 @@ resource "aws_elasticache_cluster" "cache" {
   parameter_group_name       = "default.redis6.x"
   engine_version             = "6.x"
   port                       = 6379
-  auth_token                 = random_string.redis_auth_token.result
   subnet_group_name          = aws_elasticache_subnet_group.private_subnets.name
   transit_encryption_enabled = true
   security_group_ids = [

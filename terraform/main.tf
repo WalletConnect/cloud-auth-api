@@ -104,7 +104,7 @@ data "aws_ecr_repository" "repository" {
 
 module "redis_global" {
   source             = "./redis"
-  auth_token         = random_string.auth_token.result
+  auth_token         = random_string.redis_auth_token.result
   redis_name         = "cloud-auth-redis"
   app_name           = "${terraform.workspace}_redis_${local.app_name}"
   vpc_id             = module.vpc.vpc_id
