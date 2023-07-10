@@ -24,16 +24,14 @@ resource "aws_security_group" "service_security_group" {
 }
 
 resource "aws_elasticache_cluster" "cache" {
-  cluster_id                 = replace("${var.app_name}-${var.redis_name}", "_", "-")
-  engine                     = "redis"
-  node_type                  = var.node_type
-  num_cache_nodes            = 1
-  parameter_group_name       = "default.redis6.x"
-  engine_version             = "6.x"
-  port                       = 6379
-  auth_token                 = random_string.redis_auth_token.result
-  subnet_group_name          = aws_elasticache_subnet_group.private_subnets.name
-  transit_encryption_enabled = true
+  cluster_id           = replace("${var.app_name}-${var.redis_name}", "_", "-")
+  engine               = "redis"
+  node_type            = var.node_type
+  num_cache_nodes      = 1
+  parameter_group_name = "default.redis6.x"
+  engine_version       = "6.x"
+  port                 = 6379
+  subnet_group_name    = aws_elasticache_subnet_group.private_subnets.name
   security_group_ids = [
     aws_security_group.service_security_group.id
   ]

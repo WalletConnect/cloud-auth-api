@@ -93,7 +93,7 @@ module "ecs" {
   supabase_jwt_secret = var.supabase_jwt_secret
   redis_host          = var.redis_host
   redis_port          = var.redis_port
-  redis_password      = module.redis_global.redis_auth_token
+  redis_password      = var.redis_port
 
   depends_on = [module.redis_global]
 }
@@ -102,9 +102,14 @@ data "aws_ecr_repository" "repository" {
   name = "cloud-auth-api"
 }
 
+// Generate a random string for redis auth token, no special chars
+resource "random_string" "redis_auth_token" {
+  length  = 64
+  special = false
+}
+
 module "redis_global" {
   source             = "./redis"
-  auth_token         = random_string.auth_token.result
   redis_name         = "cloud-auth-redis"
   app_name           = "${terraform.workspace}_redis_${local.app_name}"
   vpc_id             = module.vpc.vpc_id
