@@ -6,6 +6,7 @@ locals {
 
   latest_release_name = data.github_release.latest_release.name
   version             = coalesce(var.image_version, substr(local.latest_release_name, 1, length(local.latest_release_name)))
+  redis_cluster_id    = module.redis_global.cluster_id
 }
 
 #tflint-ignore: terraform_required_providers,terraform_unused_declarations
@@ -92,7 +93,9 @@ module "ecs" {
   supabase_jwt_secret = var.supabase_jwt_secret
   redis_host          = var.redis_host
   redis_port          = var.redis_port
-  redis_password      = var.redis_password
+  redis_password      = module.redis_global.redis_auth_token
+
+  depends_on = [module.redis_global]
 }
 
 data "aws_ecr_repository" "repository" {
@@ -100,8 +103,8 @@ data "aws_ecr_repository" "repository" {
 }
 
 module "redis_global" {
-  source = "./redis"
-
+  source             = "./redis"
+  auth_token         = random_string.auth_token.result
   redis_name         = "cloud-auth-redis"
   app_name           = "${terraform.workspace}_redis_${local.app_name}"
   vpc_id             = module.vpc.vpc_id
