@@ -1,5 +1,4 @@
 import RedisStore from "connect-redis";
-import cookieParser from "cookie-parser";
 import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
@@ -61,7 +60,6 @@ const app = express();
 app.disable("x-powered-by");
 // Enable body parser
 app.use(express.json());
-app.use(cookieParser(COOKIE_SECRET));
 app.set("trust proxy", 1);
 
 const isProd = process.env.NODE_ENV === "production";
@@ -88,7 +86,7 @@ const corsOptions: CorsOptions = {
     ) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error(`Origin ${origin} is not allowed by CORS`));
     }
   },
 };
