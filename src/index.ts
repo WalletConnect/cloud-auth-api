@@ -62,6 +62,7 @@ app.disable("x-powered-by");
 // Enable body parser
 app.use(express.json());
 app.use(cookieParser(COOKIE_SECRET));
+app.set("trust proxy", 1);
 
 const isProd = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
@@ -97,11 +98,13 @@ app.use(
   Session({
     name: COOKIE_NAME,
     secret: COOKIE_SECRET,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    store: redisStore,
     cookie: {
       secure: isDev ? false : true,
-      sameSite: isProd || "none",
+      sameSite: isProd ? "strict" : "none",
+      maxAge: 144 * 60 * 60 * 1000,
       httpOnly: true,
     },
   })
