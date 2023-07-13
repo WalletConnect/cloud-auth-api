@@ -52,7 +52,6 @@ const redisClient = new Redis({
 // Initialize connect-redis store for express-session
 const redisStore = new RedisStore({
   client: redisClient,
-  prefix: "cloud-auth:",
 });
 
 const app = express();
