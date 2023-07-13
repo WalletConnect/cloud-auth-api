@@ -1,4 +1,5 @@
 import RedisStore from "connect-redis";
+import cookieParser from "cookie-parser";
 import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
@@ -60,6 +61,7 @@ const app = express();
 app.disable("x-powered-by");
 // Enable body parser
 app.use(express.json());
+app.use(cookieParser(COOKIE_SECRET));
 
 const isProd = process.env.NODE_ENV === "production";
 const allowedOrigins = isProd
@@ -93,12 +95,12 @@ app.use(
   Session({
     name: COOKIE_NAME,
     secret: COOKIE_SECRET,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     store: redisStore,
     cookie: {
       secure: isProd,
-      sameSite: isProd,
+      sameSite: isProd || "none",
       httpOnly: true,
     },
   })
@@ -115,15 +117,15 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.get("/health", async function (req, res) {
-  await redisClient.set("test", "value");
-  const test = await redisClient.get("test");
-  console.log({ test });
   return res.status(200).json({ status: "OK" });
 });
 
 app.post("/nonce", captchaVerification, async function (req, res) {
   req.session.nonce = generateNonce();
-  return res.status(200).json({ nonce: req.session.nonce });
+
+  return req.session.save(() =>
+    res.status(200).json({ nonce: req.session.nonce })
+  );
 });
 
 app.post("/connect", captchaVerification, verifyAndSignIn);
