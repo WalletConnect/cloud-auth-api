@@ -45,7 +45,7 @@ if (!REDIS_PASSWORD) {
 
 // Initialize redis client
 const redisClient = new Redis({
-  host: REDIS_HOST ?? "redis",
+  host: "localhost" ?? "redis",
   port: REDIS_PORT ? parseInt(REDIS_PORT, 10) : 6379,
   password: REDIS_PASSWORD,
 });
@@ -62,6 +62,7 @@ app.disable("x-powered-by");
 // Enable body parser
 app.use(express.json());
 app.use(cookieParser(COOKIE_SECRET));
+app.set("trust proxy", 1);
 
 const isProd = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
@@ -93,15 +94,17 @@ const corsOptions: CorsOptions = {
 };
 app.use(cors(corsOptions));
 
+console.log({ name: COOKIE_NAME, secret: COOKIE_SECRET });
 app.use(
   Session({
     name: COOKIE_NAME,
     secret: COOKIE_SECRET,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       secure: isDev ? false : true,
-      sameSite: isProd || "none",
+      sameSite: isProd ? "strict" : "none",
+      maxAge: 144 * 60 * 60 * 1000,
       httpOnly: true,
     },
   })
