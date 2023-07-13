@@ -115,9 +115,6 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.get("/health", async function (req, res) {
-  await redisClient.set("test", "value");
-  const test = await redisClient.get("test");
-  console.log({ test });
   return res.status(200).json({ status: "OK" });
 });
 

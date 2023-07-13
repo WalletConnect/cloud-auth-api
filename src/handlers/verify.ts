@@ -13,6 +13,7 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
 
     const message = new SiweMessage(req.body.message);
     const fields = await message.validate(req.body.signature);
+    console.log({ fieldsNonce: fields.nonce, sessionNonce: req.session.nonce });
     if (fields.nonce !== req.session.nonce) {
       res.status(422).json({
         message: `Invalid nonce.`,
