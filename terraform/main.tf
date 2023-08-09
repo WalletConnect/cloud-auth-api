@@ -94,6 +94,7 @@ module "ecs" {
   redis_host          = var.redis_host
   redis_port          = var.redis_port
   redis_password      = var.redis_port
+  infura_api_key      = var.infura_api_key
 
   depends_on = [module.redis_global]
 }
