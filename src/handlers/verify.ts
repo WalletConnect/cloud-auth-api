@@ -1,18 +1,17 @@
-import { Request, Response } from "express";
-import { ErrorTypes, SiweMessage } from "siwe";
-import { createOrUpdateUser } from "../services/prisma";
-
+import { Request, Response } from 'express';
+import { ErrorTypes, SiweMessage } from 'siwe';
+import { createOrUpdateUser } from '../services/prisma';
+import { ethers } from 'ethers';
 export const verifyAndSignIn = async (req: Request, res: Response) => {
   try {
     if (!req.body.message) {
-      res
-        .status(422)
-        .json({ message: "Expected prepareMessage object as body." });
+      res.status(422).json({ message: 'Expected prepareMessage object as body.' });
       return;
     }
 
     const message = new SiweMessage(req.body.message);
-    const fields = await message.validate(req.body.signature);
+    const provider = new ethers.providers.InfuraProvider('mainnet', process.env.INFURA_API_KEY);
+    const fields = await message.validate(req.body.signature, provider);
     if (fields.nonce !== req.session.nonce) {
       res.status(422).json({
         message: `Invalid nonce.`,
