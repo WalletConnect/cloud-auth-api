@@ -18,6 +18,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+      INFURA_API_KEY: ${INFURA_API_KEY}
     depends_on:
       redis:
         condition: service_healthy
