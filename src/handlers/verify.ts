@@ -1,14 +1,19 @@
-import { Request, Response } from 'express';
-import { ErrorTypes, SiweMessage } from 'siwe';
-import { createOrUpdateUser } from '../services/prisma';
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
+import { Request, Response } from "express";
+import { SiweErrorType, SiweMessage } from "siwe";
+import { createOrUpdateUser } from "../services/prisma";
 
-const provider = new ethers.providers.InfuraProvider('mainnet', process.env.INFURA_API_KEY);
+const provider = new ethers.InfuraProvider(
+  "mainnet",
+  process.env.INFURA_API_KEY
+);
 
 export const verifyAndSignIn = async (req: Request, res: Response) => {
   try {
     if (!req.body.message) {
-      res.status(422).json({ message: 'Expected prepareMessage object as body.' });
+      res
+        .status(422)
+        .json({ message: "Expected prepareMessage object as body." });
       return;
     }
 
@@ -42,11 +47,11 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
     req.session.nonce = undefined;
     try {
       switch (e) {
-        case ErrorTypes.EXPIRED_MESSAGE: {
+        case SiweErrorType.EXPIRED_MESSAGE: {
           req.session.save(() => res.status(440).json({ message: e.message }));
           break;
         }
-        case ErrorTypes.INVALID_SIGNATURE: {
+        case SiweErrorType.INVALID_SIGNATURE: {
           req.session.save(() => res.status(422).json({ message: e.message }));
           break;
         }

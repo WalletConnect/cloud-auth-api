@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 
 export interface GoTrueClaims {
   sub: string;
@@ -15,10 +16,6 @@ export interface GoTrueClaims {
 }
 
 export type TPrismaTransaction = Omit<
-  PrismaClient<
-    Prisma.PrismaClientOptions,
-    never,
-    Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
-  >,
-  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use"
+  PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >;
