@@ -18,22 +18,25 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
     }
 
     const message = new SiweMessage(req.body.message);
-    const fields = await message.validate(req.body.signature, provider);
-    if (fields.nonce !== req.session.nonce) {
-      res.status(422).json({
-        message: `Invalid nonce.`,
-      });
-      return;
-    }
-    req.session.siwe = fields;
-    if (!fields.expirationTime) {
+    const fields = await message.verify(
+      {
+        signature: req.body.signature,
+        nonce: req.session.nonce,
+      },
+      {
+        provider,
+      }
+    );
+
+    req.session.siwe = fields.data;
+    if (!fields.data.expirationTime) {
       return res.status(422).json({
         message: `Expected expirationTime to be set.`,
       });
     }
-    req.session.cookie.expires = new Date(fields.expirationTime);
+    req.session.cookie.expires = new Date(fields.data.expirationTime);
 
-    const { accessToken, refreshToken } = await createOrUpdateUser(fields);
+    const { accessToken, refreshToken } = await createOrUpdateUser(fields.data);
 
     return req.session.save(() => {
       return res.status(200).json({
@@ -53,6 +56,10 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
         }
         case SiweErrorType.INVALID_SIGNATURE: {
           req.session.save(() => res.status(422).json({ message: e.message }));
+          break;
+        }
+        case SiweErrorType.NONCE_MISMATCH: {
+          req.session.save(() => res.status(403).json({ message: e.message }));
           break;
         }
         default: {
