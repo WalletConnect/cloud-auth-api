@@ -31,7 +31,7 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
     req.session.siwe = fields.data;
     if (!fields.data.expirationTime) {
       return res.status(422).json({
-        message: "Expected expirationTime to be set.",
+        message: `Expected expirationTime to be set.`,
       });
     }
     req.session.cookie.expires = new Date(fields.data.expirationTime);
