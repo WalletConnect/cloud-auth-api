@@ -58,8 +58,16 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
           req.session.save(() => res.status(422).json({ message: e.message }));
           break;
         }
+        case SiweErrorType.INVALID_ADDRESS: {
+          req.session.save(() => res.status(422).json({ message: e.message }));
+          break;
+        }
         case SiweErrorType.NONCE_MISMATCH: {
-          req.session.save(() => res.status(403).json({ message: e.message }));
+          req.session.save(() => res.status(400).json({ message: e.message }));
+          break;
+        }
+        case SiweErrorType.DOMAIN_MISMATCH: {
+          req.session.save(() => res.status(400).json({ message: e.message }));
           break;
         }
         default: {
