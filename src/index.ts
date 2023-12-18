@@ -109,15 +109,13 @@ app.get('/health', async function (req, res) {
   return res.status(200).json({ status: 'OK' })
 })
 
-app.post('/nonce', captchaVerification, async function (req, res) {
+app.get('/nonce', async function (req, res) {
   req.session.nonce = generateNonce()
 
   return req.session.save(() => res.status(200).json({ nonce: req.session.nonce }))
 })
 
-app.post('/connect', captchaVerification, verifyAndSignIn)
-
-app.post('/session', captchaVerification, async function (req, res) {
+app.get('/session', async function (req, res) {
   const siweSession = req.session.siwe
   if (!siweSession) {
     return res.status(401).json({ error: 'Unauthorized' })
@@ -125,6 +123,8 @@ app.post('/session', captchaVerification, async function (req, res) {
 
   return res.status(200).json({ session: siweSession })
 })
+
+app.post('/connect', captchaVerification, verifyAndSignIn)
 
 app.post('/disconnect', async function (req, res) {
   res.clearCookie(COOKIE_NAME)
