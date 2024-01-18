@@ -47,6 +47,12 @@ npm run dev
 
 The server will start on port 3333. You can access it at `http://localhost:3333`.
 
+6. Alternatively you can run the docker containers
+
+```sh
+docker-compose build && docker-compose up
+```
+
 ## API Endpoints
 
 This API has the following endpoints:
