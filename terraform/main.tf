@@ -84,17 +84,17 @@ module "ecs" {
   autoscaling_min_capacity = local.environment == "prod" ? 1 : 1
   desired_count            = local.environment == "prod" ? 1 : 1
 
-  node_env            = var.node_env
-  database_url        = var.database_url
-  direct_url          = var.direct_url
-  cookie_name         = var.cookie_name
-  cookie_secret       = var.cookie_secret
-  hcaptcha_secret     = var.hcaptcha_secret
-  supabase_jwt_secret = var.supabase_jwt_secret
-  redis_host          = var.redis_host
-  redis_port          = var.redis_port
-  redis_password      = var.redis_port
-  infura_api_key      = var.infura_api_key
+  node_env                 = var.node_env
+  database_url             = var.database_url
+  direct_url               = var.direct_url
+  cookie_name              = var.cookie_name
+  cookie_secret            = var.cookie_secret
+  hcaptcha_secret          = var.hcaptcha_secret
+  supabase_jwt_secret      = var.supabase_jwt_secret
+  redis_host               = var.redis_host
+  redis_port               = var.redis_port
+  redis_password           = var.redis_port
+  walletconnect_project_id = var.walletconnect_project_id
 
   depends_on = [module.redis_global]
 }

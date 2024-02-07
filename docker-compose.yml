@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 services:
   api:
     build: .
@@ -18,7 +18,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
-      INFURA_API_KEY: ${INFURA_API_KEY}
+      WALLETCONNECT_PROJECT_ID: ${WALLETCONNECT_PROJECT_ID}
     depends_on:
       redis:
         condition: service_healthy
@@ -28,6 +28,6 @@ services:
     image: redis:6.2.12
     command: redis-server --requirepass ${REDIS_PASSWORD}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
     ports:
-      - "6379:6379"
+      - '6379:6379'
