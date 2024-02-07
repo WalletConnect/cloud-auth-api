@@ -66,7 +66,7 @@ variable "redis_password" {
   sensitive = true
 }
 
-variable "infura_api_key" {
+variable "walletconnect_project_id" {
   type      = string
   sensitive = true
 }

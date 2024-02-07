@@ -69,6 +69,7 @@ model mfa_challenges {
   ip_address  String      @db.Inet
   mfa_factors mfa_factors @relation(fields: [factor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mfa_challenges_auth_factor_id_fkey")
 
+  @@index([created_at(sort: Desc)], map: "mfa_challenge_created_at_idx")
   @@schema("auth")
 }
 
@@ -85,6 +86,7 @@ model mfa_factors {
   users          users            @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id, created_at], map: "factor_id_created_at_idx")
+  @@index([user_id])
   @@schema("auth")
 }
 
@@ -104,7 +106,8 @@ model refresh_tokens {
   @@index([instance_id, user_id])
   @@index([parent])
   @@index([session_id, revoked])
-  @@index([token])
+  @@index([session_id], map: "refresh_token_session_id")
+  @@index([updated_at(sort: Desc)])
   @@schema("auth")
 }
 
@@ -132,10 +135,13 @@ model saml_relay_states {
   from_ip_address String?       @db.Inet
   created_at      DateTime?     @db.Timestamptz(6)
   updated_at      DateTime?     @db.Timestamptz(6)
+  flow_state_id   String?       @db.Uuid
+  flow_state      flow_state?   @relation(fields: [flow_state_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   sso_providers   sso_providers @relation(fields: [sso_provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([for_email])
   @@index([sso_provider_id])
+  @@index([created_at(sort: Desc)])
   @@schema("auth")
 }
 
@@ -159,6 +165,7 @@ model sessions {
 
   @@index([user_id])
   @@index([user_id, created_at], map: "user_id_created_at_idx")
+  @@index([not_after(sort: Desc)])
   @@schema("auth")
 }
 
@@ -226,6 +233,26 @@ model users {
   sessions                    sessions[]
 
   @@index([instance_id])
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model flow_state {
+  id                     String              @id @db.Uuid
+  user_id                String?             @db.Uuid
+  auth_code              String
+  code_challenge         String
+  provider_type          String
+  provider_access_token  String?
+  provider_refresh_token String?
+  created_at             DateTime?           @db.Timestamptz(6)
+  updated_at             DateTime?           @db.Timestamptz(6)
+  authentication_method  String
+  saml_relay_states      saml_relay_states[]
+
+  @@index([created_at(sort: Desc)])
+  @@index([auth_code], map: "idx_auth_code")
+  @@index([user_id, authentication_method], map: "idx_user_id_auth_method")
   @@schema("auth")
 }
 

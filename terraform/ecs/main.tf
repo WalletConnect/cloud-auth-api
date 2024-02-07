@@ -75,7 +75,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
         { name = "REDIS_PASSWORD", value = var.redis_password },
         { name = "REDIS_HOST", value = var.redis_host },
         { name = "REDIS_PORT", value = var.redis_port },
-        { name = "INFURA_API_KEY", value = var.infura_api_key },
+        { name = "WALLETCONNECT_PROJECT_ID", value = var.walletconnect_project_id },
       ],
       logConfiguration = {
         logDriver = "awslogs",

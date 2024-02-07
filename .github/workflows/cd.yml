@@ -63,7 +63,7 @@ jobs:
           TF_VAR_redis_host: ${{ secrets.REDIS_HOST }}
           TF_VAR_redis_port: ${{ secrets.REDIS_PORT }}
           TF_VAR_redis_password: ${{ secrets.REDIS_PASSWORD }}
-          TF_VAR_infura_api_key: ${{ secrets.INFURA_API_KEY }}
+          TF_VAR_walletconnect_project_id: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -104,7 +104,7 @@ jobs:
           TF_VAR_redis_host: ${{ secrets.REDIS_HOST }}
           TF_VAR_redis_port: ${{ secrets.REDIS_PORT }}
           TF_VAR_redis_password: ${{ secrets.REDIS_PASSWORD }}
-          TF_VAR_infura_api_key: ${{ secrets.INFURA_API_KEY }}
+          TF_VAR_walletconnect_project_id: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
