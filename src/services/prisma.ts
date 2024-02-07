@@ -25,7 +25,7 @@ export const generateAccessToken = async (
   }
 
   if (!user.aud || !user.role || !sessionId) {
-    throw new Error('Missing user informations')
+    throw new Error('Missing user information')
   }
 
   const claims: GoTrueClaims = {

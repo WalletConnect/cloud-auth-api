@@ -67,7 +67,7 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
           break
         }
         default: {
-          req.session.save(() => res.status(500).json({ message: e.message }))
+          req.session.save(() => res.status(500).json({ message: e.message ?? `${e}` }))
           break
         }
       }

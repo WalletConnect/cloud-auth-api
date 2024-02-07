@@ -8,6 +8,7 @@ import { Redis } from 'ioredis'
 import { SiweMessage, generateNonce } from 'siwe'
 import { verifyAndSignIn } from './handlers/verify'
 import { captchaVerification } from './middlewares/captchaVerification'
+import { PrismaClient } from '@prisma/client'
 
 dotenv.config()
 
@@ -34,6 +35,8 @@ if (!REDIS_HOST) {
 if (!REDIS_PASSWORD) {
   throw new ReferenceError('REDIS_PASSWORD missing in environment variables')
 }
+
+const prismaClient = new PrismaClient()
 
 // Initialize redis client
 const redisClient = new Redis({
@@ -106,7 +109,13 @@ const limiter = rateLimit({
 app.use(limiter)
 
 app.get('/health', async function (req, res) {
-  return res.status(200).json({ status: 'OK' })
+  try {
+    await prismaClient.$queryRaw<number>`SELECT 1;`
+    return res.status(200).json({ status: 'OK' })
+  } catch (error) {
+    console.error('/health -> DB connection failed')
+    return res.status(500).json({ status: 'NOT OK' })
+  }
 })
 
 app.get('/nonce', async function (req, res) {
@@ -143,7 +152,7 @@ app.use((req, res, next) => {
 
 // custom error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack)
+  console.error(err)
   return res.status(500).json({ error: 'Something went wrong!' })
 })
 
