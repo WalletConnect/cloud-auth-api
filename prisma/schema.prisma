@@ -23,7 +23,7 @@ model audit_log_entries {
 }
 
 model identities {
-  id              String
+  provider_id     String
   user_id         String    @db.Uuid
   identity_data   Json
   provider        String
@@ -31,9 +31,10 @@ model identities {
   created_at      DateTime? @default(now()) @db.Timestamptz(6)
   updated_at      DateTime? @updatedAt @db.Timestamptz(6)
   email           String?   @default(dbgenerated("lower((identity_data ->> 'email'::text))"))
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   users           users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([provider, id])
+  @@unique([provider_id, provider], map: "identities_provider_id_provider_unique")
   @@index([email])
   @@index([user_id])
   @@schema("auth")
@@ -228,11 +229,13 @@ model users {
   reauthentication_sent_at    DateTime?     @db.Timestamptz(6)
   is_sso_user                 Boolean       @default(false)
   deleted_at                  DateTime?     @db.Timestamptz(6)
+  is_anonymous                Boolean       @default(false)
   identities                  identities[]
   mfa_factors                 mfa_factors[]
   sessions                    sessions[]
 
   @@index([instance_id])
+  @@index([is_anonymous])
   @@schema("auth")
 }
 
