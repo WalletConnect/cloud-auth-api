@@ -99,6 +99,7 @@ export async function createOrUpdateUser(siweMsg: SiweMessage) {
             id: existingUser.id,
             provider: 'eth',
             user_id: existingUser.id,
+            provider_id: siweMsg.address,
             identity_data: {
               sub: existingUser.id,
               address: siweMsg.address
@@ -157,6 +158,7 @@ export async function createOrUpdateUser(siweMsg: SiweMessage) {
         id: newUser.id,
         provider: 'eth',
         user_id: newUser.id,
+        provider_id: siweMsg.address,
         identity_data: {
           sub: newUser.id,
           address: siweMsg.address
