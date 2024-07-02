@@ -3,9 +3,7 @@ import { Request, Response } from 'express'
 import { SiweErrorType, SiweMessage } from 'siwe'
 import { createOrUpdateUser } from '../services/prisma'
 
-const provider = new ethers.JsonRpcProvider(
-  `https://rpc.walletconnect.com/v1?chainId=eip155:1&projectId=${process.env.WALLETCONNECT_PROJECT_ID}`
-)
+const provider = new ethers.JsonRpcProvider(`https://rpc.walletconnect.com/v1?chainId=eip155:1&projectId=${process.env.WALLETCONNECT_PROJECT_ID}`)
 
 export const verifyAndSignIn = async (req: Request, res: Response) => {
   try {
@@ -25,12 +23,14 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
     )
 
     req.session.siwe = fields.data
-    if (!fields.data.expirationTime) {
-      return res.status(422).json({
-        message: 'Expected expirationTime to be set.'
-      })
+
+    const expirationTime = fields.data.expirationTime
+    if (expirationTime) {
+      req.session.cookie.expires = new Date(expirationTime)
+    } else {
+      // 7 days from now
+      req.session.cookie.expires = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
     }
-    req.session.cookie.expires = new Date(fields.data.expirationTime)
 
     const { accessToken, refreshToken } = await createOrUpdateUser(fields.data)
 
