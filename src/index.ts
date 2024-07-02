@@ -36,13 +36,20 @@ if (!REDIS_PASSWORD) {
   throw new ReferenceError('REDIS_PASSWORD missing in environment variables')
 }
 
+const isProd = process.env.NODE_ENV === 'production'
+const isStage = process.env.NODE_ENV === 'staging'
+const isDev = process.env.NODE_ENV === 'development'
+
 const prismaClient = new PrismaClient()
 
 // Initialize redis client
 const redisClient = new Redis({
   host: REDIS_HOST ?? 'redis',
   port: REDIS_PORT ? parseInt(REDIS_PORT, 10) : 6379,
-  password: REDIS_PASSWORD
+  password: REDIS_PASSWORD,
+  tls: {
+    rejectUnauthorized: isProd ? true : false
+  }
 })
 
 // Initialize connect-redis store for express-session
@@ -58,9 +65,6 @@ app.disable('x-powered-by')
 app.use(express.json())
 app.set('trust proxy', 1)
 
-const isProd = process.env.NODE_ENV === 'production'
-const isDev = process.env.NODE_ENV === 'development'
-
 const allowedOrigins = isProd
   ? ['https://cloud.walletconnect.com']
   : ['http://localhost', 'https://wc-cloud-staging.vercel.app', /\.?-walletconnect1\.vercel\.app$/]
@@ -69,11 +73,7 @@ const corsOptions: CorsOptions = {
   credentials: true,
   methods: ['OPTIONS', 'GET', 'POST'],
   origin: (origin, callback) => {
-    if (
-      !origin ||
-      isDev ||
-      allowedOrigins.some((allowedOrigin) => new RegExp(allowedOrigin).test(origin))
-    ) {
+    if (!origin || isDev || allowedOrigins.some((allowedOrigin) => new RegExp(allowedOrigin).test(origin))) {
       callback(null, true)
     } else {
       callback(new Error(`Origin ${origin} is not allowed by CORS`))
@@ -91,7 +91,7 @@ app.use(
     store: redisStore,
     cookie: {
       secure: isDev ? false : true,
-      sameSite: isProd ? 'strict' : 'none',
+      sameSite: isStage ? 'none' : 'strict',
       maxAge: 144 * 60 * 60 * 1000,
       httpOnly: true
     }
