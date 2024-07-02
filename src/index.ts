@@ -46,10 +46,7 @@ const prismaClient = new PrismaClient()
 const redisClient = new Redis({
   host: REDIS_HOST ?? 'redis',
   port: REDIS_PORT ? parseInt(REDIS_PORT, 10) : 6379,
-  password: REDIS_PASSWORD,
-  tls: {
-    rejectUnauthorized: isProd ? true : false
-  }
+  password: REDIS_PASSWORD
 })
 
 // Initialize connect-redis store for express-session
