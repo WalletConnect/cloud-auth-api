@@ -90,7 +90,7 @@ app.use(
     store: redisStore,
     cookie: {
       secure: isDev ? false : true,
-      sameSite: 'strict',
+      sameSite: isProd ? 'strict' : 'none',
       maxAge: 144 * 60 * 60 * 1000,
       httpOnly: true
     }
