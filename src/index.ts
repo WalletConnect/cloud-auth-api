@@ -37,6 +37,7 @@ if (!REDIS_PASSWORD) {
 }
 
 const isProd = process.env.NODE_ENV === 'production'
+const isStage = process.env.NODE_ENV === 'staging'
 const isDev = process.env.NODE_ENV === 'development'
 
 const prismaClient = new PrismaClient()
@@ -90,7 +91,7 @@ app.use(
     store: redisStore,
     cookie: {
       secure: isDev ? false : true,
-      sameSite: 'strict',
+      sameSite: isStage ? 'none' : 'strict',
       maxAge: 144 * 60 * 60 * 1000,
       httpOnly: true
     }
