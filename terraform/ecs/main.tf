@@ -24,9 +24,10 @@ resource "aws_ecs_cluster" "app_cluster" {
     }
   }
 
+  # Disabling because metrics not used currently
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = "disabled"
   }
 }
 
