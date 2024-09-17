@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging
-      url: https://staging.cloud-auth-api.walletconnect.com/health
+      url: https://staging.cloud-auth-api.reown.com/health
     needs:
       - get-version
     steps:
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: prod
-      url: https://cloud-auth-api.walletconnect.com/health
+      url: https://cloud-auth-api.reown.com/health
     needs:
       - get-version
       # - validate-staging
