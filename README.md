@@ -63,5 +63,5 @@ This API has the following endpoints:
 
 ## Health checks
 
-- Staging: https://staging.cloud-auth-api.walletconnect.com/health
-- Production: https://cloud-auth-api.walletconnect.com/health
+- Staging: https://staging.cloud-auth-api.reown.com/health
+- Production: https://cloud-auth-api.reown.com/health

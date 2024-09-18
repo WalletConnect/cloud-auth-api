@@ -10,7 +10,7 @@ variable "azs" {
 
 variable "public_url" {
   type    = string
-  default = "cloud-auth-api.walletconnect.com"
+  default = "cloud-auth-api.reown.com"
 }
 
 variable "image_version" {
