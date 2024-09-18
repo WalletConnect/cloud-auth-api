@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client'
 import RedisStore from 'connect-redis'
 import cors, { CorsOptions } from 'cors'
 import dotenv from 'dotenv'
@@ -8,7 +9,6 @@ import { Redis } from 'ioredis'
 import { SiweMessage, generateNonce } from 'siwe'
 import { verifyAndSignIn } from './handlers/verify'
 import { captchaVerification } from './middlewares/captchaVerification'
-import { PrismaClient } from '@prisma/client'
 
 dotenv.config()
 
@@ -63,14 +63,18 @@ app.use(express.json())
 app.set('trust proxy', 1)
 
 const allowedOrigins = isProd
-  ? ['https://cloud.walletconnect.com']
+  ? ['https://cloud.walletconnect.com', 'https://cloud.reown.com']
   : ['http://localhost', 'https://wc-cloud-staging.vercel.app', /\.?-walletconnect1\.vercel\.app$/]
 
 const corsOptions: CorsOptions = {
   credentials: true,
   methods: ['OPTIONS', 'GET', 'POST'],
   origin: (origin, callback) => {
-    if (!origin || isDev || allowedOrigins.some((allowedOrigin) => new RegExp(allowedOrigin).test(origin))) {
+    if (
+      !origin ||
+      isDev ||
+      allowedOrigins.some((allowedOrigin) => new RegExp(allowedOrigin).test(origin))
+    ) {
       callback(null, true)
     } else {
       callback(new Error(`Origin ${origin} is not allowed by CORS`))
