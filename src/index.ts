@@ -64,7 +64,12 @@ app.set('trust proxy', 1)
 
 const allowedOrigins = isProd
   ? ['https://cloud.walletconnect.com', 'https://cloud.reown.com']
-  : ['http://localhost', 'https://wc-cloud-staging.vercel.app', /\.?-walletconnect1\.vercel\.app$/]
+  : [
+      'http://localhost',
+      'https://wc-cloud-staging.vercel.app',
+      /\.?-walletconnect1\.vercel\.app$/,
+      /\.?-reown-com\.vercel\.app$/
+    ]
 
 const corsOptions: CorsOptions = {
   credentials: true,
