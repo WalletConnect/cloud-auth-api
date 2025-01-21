@@ -48,15 +48,14 @@ module "vpc" {
 }
 
 module "tags" {
-  source = "github.com/WalletConnect/terraform-modules.git?ref=52a74ee5bcaf5cacb5664c6f88d9dbce28500581//modules/tags"
+  source = "github.com/WalletConnect/terraform-modules.git//modules/tags?ref=52a74ee5bcaf5cacb5664c6f88d9dbce28500581"
 
   application = local.app_name
   env         = local.environment
 }
 
 module "dns" {
-  source = "github.com/WalletConnect/terraform-modules.git?ref=52a74ee5bcaf5cacb5664c6f88d9dbce28500581//modules/dns"
-
+  source           = "github.com/WalletConnect/terraform-modules.git//modules/dns?ref=52a74ee5bcaf5cacb5664c6f88d9dbce28500581"
   hosted_zone_name = var.public_url
   fqdn             = local.fqdn
 }
