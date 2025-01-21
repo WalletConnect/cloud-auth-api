@@ -5,7 +5,7 @@ export const captchaVerification = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "staging") {
     return next();
   }
 
