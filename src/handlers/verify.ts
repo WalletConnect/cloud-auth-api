@@ -2,8 +2,11 @@ import { ethers } from 'ethers'
 import { Request, Response } from 'express'
 import { SiweErrorType, SiweMessage } from 'siwe'
 import { createOrUpdateUser } from '../services/prisma'
+import { SiweDeprecationError } from '../utils/errors'
 
-const provider = new ethers.JsonRpcProvider(`https://rpc.walletconnect.com/v1?chainId=eip155:1&projectId=${process.env.WALLETCONNECT_PROJECT_ID}`)
+const provider = new ethers.JsonRpcProvider(
+  `https://rpc.walletconnect.com/v1?chainId=eip155:1&projectId=${process.env.WALLETCONNECT_PROJECT_ID}`
+)
 
 export const verifyAndSignIn = async (req: Request, res: Response) => {
   try {
@@ -44,6 +47,11 @@ export const verifyAndSignIn = async (req: Request, res: Response) => {
     console.error(e)
     req.session.siwe = undefined
     req.session.nonce = undefined
+    if (e instanceof SiweDeprecationError) {
+      return req.session.save(() =>
+        res.status(403).json({ cause: 'SIWE_DEPRECATION', message: e.message ?? `${e}` })
+      )
+    }
     try {
       switch (e) {
         case SiweErrorType.EXPIRED_MESSAGE: {
