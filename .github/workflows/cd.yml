@@ -134,7 +134,7 @@ jobs:
       - name: Apply staging
         working-directory: ${{ vars.TF_DIRECTORY }}
         env:
-          TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
+          TF_WORKSPACE: staging
           TF_LOG: DEBUG
           TF_VAR_node_env: staging
           TF_VAR_supabase_jwt_secret: ${{ secrets.SUPABASE_JWT_SECRET }}
@@ -272,7 +272,7 @@ jobs:
   #     - name: Apply prod
   #       working-directory: ${{ vars.TF_DIRECTORY }}
   #       env:
-  #         TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
+  #         TF_WORKSPACE: prod
   #         TF_VAR_grafana_auth: ${{ steps.grafana-get-key.outputs.key }}
   #         TF_LOG: DEBUG
   #         TF_VAR_node_env: production
