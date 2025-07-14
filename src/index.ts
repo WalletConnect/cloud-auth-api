@@ -19,7 +19,14 @@ declare module 'express-session' {
   }
 }
 
-const { PORT, COOKIE_SECRET, COOKIE_NAME, REDIS_PASSWORD, REDIS_HOST, REDIS_PORT } = process.env
+const {
+  PORT,
+  COOKIE_SECRET,
+  COOKIE_NAME,
+  REDIS_PASSWORD,
+  REDIS_HOST,
+  REDIS_PORT
+} = process.env
 if (!COOKIE_NAME) {
   throw new ReferenceError('COOKIE_NAME missing in environment variables')
 }
@@ -63,7 +70,11 @@ app.use(express.json())
 app.set('trust proxy', 1)
 
 const allowedOrigins = isProd
-  ? ['https://cloud.walletconnect.com', 'https://cloud.reown.com']
+  ? [
+      'https://cloud.walletconnect.com',
+      'https://cloud.reown.com',
+      'https://legacy-cloud.reown.com'
+    ]
   : [
       'http://localhost',
       'https://wc-cloud-staging.vercel.app',
@@ -78,7 +89,9 @@ const corsOptions: CorsOptions = {
     if (
       !origin ||
       isDev ||
-      allowedOrigins.some((allowedOrigin) => new RegExp(allowedOrigin).test(origin))
+      allowedOrigins.some((allowedOrigin) =>
+        new RegExp(allowedOrigin).test(origin)
+      )
     ) {
       callback(null, true)
     } else {
@@ -127,7 +140,9 @@ app.get('/health', async function (req, res) {
 app.get('/nonce', async function (req, res) {
   req.session.nonce = generateNonce()
 
-  return req.session.save(() => res.status(200).json({ nonce: req.session.nonce }))
+  return req.session.save(() =>
+    res.status(200).json({ nonce: req.session.nonce })
+  )
 })
 
 app.get('/session', async function (req, res) {
