@@ -15,6 +15,10 @@ concurrency:
   # Don't cancel existing
   cancel-in-progress: false
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   get-version:
     runs-on: ubuntu-latest
@@ -127,7 +131,7 @@ jobs:
             grafana_auth:${{ steps.grafana-get-key.outputs.key }}
             ${{ inputs.tf-variables }}
 
-      - name: Apply {{ environment }}
+      - name: Apply staging
         working-directory: ${{ vars.TF_DIRECTORY }}
         env:
           TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
@@ -265,7 +269,7 @@ jobs:
             grafana_auth:${{ steps.grafana-get-key.outputs.key }}
             ${{ inputs.tf-variables }}
 
-      - name: Apply {{ environment }}
+      - name: Apply prod
         working-directory: ${{ vars.TF_DIRECTORY }}
         env:
           TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
